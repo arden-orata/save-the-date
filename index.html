@@ -171,13 +171,14 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 5rem 2rem 5rem;
+      justify-content: flex-start;
+      padding: 3.5rem 2rem 5rem;
       background-image: url('assets/images/Balibackground.webp');
       background-size: cover;
-      background-position: center top;
+      background-position: center center;
       background-repeat: no-repeat;
-      min-height: 70vh;
+      /* Aspect ratio matches the image (1071 × 2000) so nothing gets cropped */
+      aspect-ratio: 1071 / 2000;
     }
 
     .venue-label {
