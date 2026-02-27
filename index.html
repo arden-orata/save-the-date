@@ -5,21 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Elisa &amp; Arden</title>
 
-  <!-- ============================================================
-       Open Graph / Social Sharing
-       ACTION REQUIRED: Replace YOUR_GITHUB_USERNAME and YOUR_REPO_NAME
-       with your actual GitHub Pages domain, e.g.:
-       https://yourusername.github.io/your-repo/assets/images/Thumbnail.JPG
-  ============================================================ -->
-  <meta property="og:type"        content="website" />
-  <meta property="og:title"       content="Elisa &amp; Arden" />
-  <meta property="og:description" content="❤️" />
+  <meta property="og:type"         content="website" />
+  <meta property="og:title"        content="Elisa &amp; Arden" />
+  <meta property="og:description"  content="❤️" />
   <meta property="og:image"        content="https://arden-orata.github.io/save-the-date/assets/images/Thumbnail.JPG" />
   <meta property="og:image:width"  content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:url"          content="https://arden-orata.github.io/save-the-date/" />
 
-  <!-- Twitter / iMessage fallback -->
   <meta name="twitter:card"        content="summary_large_image" />
   <meta name="twitter:title"       content="Elisa &amp; Arden" />
   <meta name="twitter:description" content="❤️" />
@@ -39,18 +32,21 @@
 
     html, body {
       min-height: 100%;
-      background: var(--bg);
     }
 
     body {
       display: flex;
-      align-items: flex-start;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
       min-height: 100vh;
       font-family: 'Jost', sans-serif;
       overflow-y: auto;
+      background: var(--bg);
     }
 
+    /* ══════════════════════════════════════
+       SECTION 1 — Off-white top
+    ══════════════════════════════════════ */
     .card {
       text-align: center;
       padding: 0 4rem 5rem;
@@ -60,6 +56,7 @@
       justify-content: flex-start;
       width: 100%;
       max-width: 680px;
+      background: var(--bg);
       animation: floatIn 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
       opacity: 0;
     }
@@ -69,7 +66,6 @@
       100% { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Save the Date heading ── */
     .std-block {
       line-height: 1;
       margin-bottom: 3rem;
@@ -107,7 +103,6 @@
       line-height: 0.95;
     }
 
-/* ── Body copy ── */
     .subtitle {
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
@@ -166,11 +161,86 @@
       margin-left: auto;
       margin-right: auto;
     }
-      .card { padding: 0 1.5rem 3rem; }
+
+    /* ══════════════════════════════════════
+       SECTION 2 — Bali background
+    ══════════════════════════════════════ */
+    .venue-section {
+      width: 100%;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 5rem 2rem 5rem;
+      background-image: url('assets/images/Balibackground.webp');
+      background-size: cover;
+      background-position: center top;
+      background-repeat: no-repeat;
+      min-height: 70vh;
+    }
+
+    .venue-label {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: clamp(0.75rem, 2vw, 0.95rem);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--black);
+      margin-bottom: 0.75rem;
+    }
+
+    .venue-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+      font-size: clamp(1.6rem, 5vw, 3rem);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--black);
+      margin-bottom: 0.4rem;
+      text-align: center;
+    }
+
+    .venue-country {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(1rem, 2.4vw, 1.5rem);
+      color: var(--black);
+      letter-spacing: 0.06em;
+      margin-bottom: 2.5rem;
+    }
+
+    /* Tapping opens Google Maps app on mobile */
+    .map-link {
+      display: block;
+      width: 70%;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .map-link iframe {
+      display: block;
+      width: 100%;
+      height: 320px;
+      border: 0;
+      /* Disables map panning so tap goes to the <a> link instead */
+      pointer-events: none;
+    }
+
+    @media (max-width: 480px) {
+      .card           { padding: 0 1.5rem 3rem; }
+      .map-link       { width: 90%; }
+      .map-link iframe { height: 260px; }
     }
   </style>
 </head>
 <body>
+
+  <!-- ── Section 1: Save the Date ── -->
   <div class="card" style="margin-top: 9vh;">
 
     <div class="std-block">
@@ -179,14 +249,10 @@
       <span class="std-date">DATE</span>
     </div>
 
-<p class="subtitle">for the wedding of</p>
-
+    <p class="subtitle">for the wedding of</p>
     <p class="names">ELISA &amp; ARDEN</p>
-
     <p class="date-line">AUGUST 21<span style="position: relative; bottom: 0.08em;">–</span>22, 2027</p>
-
     <p class="location">Bali, Indonesia</p>
-
     <p class="invitation">formal invitation to follow</p>
 
     <img
@@ -199,5 +265,30 @@
     />
 
   </div>
+
+  <!-- ── Section 2: Venue + Map ── -->
+  <section class="venue-section">
+
+    <p class="venue-label">venue</p>
+    <p class="venue-name">Jumeirah Bali</p>
+    <p class="venue-country">Indonesia</p>
+
+    <a
+      class="map-link"
+      href="https://maps.google.com/?q=Jumeirah+Bali"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Open Jumeirah Bali in Google Maps"
+    >
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3942.861756143675!2d115.11803017541776!3d-8.79905608996164!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd245154692a1bb%3A0xc52a931844d71a28!2sJumeirah%20Bali!5e0!3m2!1sen!2sus!4v1772218940488!5m2!1sen!2sus"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Jumeirah Bali location map"
+      ></iframe>
+    </a>
+
+  </section>
+
 </body>
 </html>
