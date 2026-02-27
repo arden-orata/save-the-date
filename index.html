@@ -34,7 +34,7 @@
       --brown:       #c8967a;
       --light-brown: #b07858;
       --black:       #1e1e1e;
-      --bg:          #f9f6f2;
+      --bg:          #fdfbf9;
     }
 
     html, body {
@@ -107,19 +107,7 @@
       line-height: 0.95;
     }
 
-    /* ── Couple photo ── */
-    .couple-photo {
-      width: 100%;
-      /* Cinematic 4:3 crop — adjust ratio here if needed */
-      aspect-ratio: 4 / 3;
-      object-fit: cover;
-      /* Keeps faces in frame; tweak the Y value if heads get cropped */
-      object-position: center 38%;
-      display: block;
-      margin-bottom: 3rem;
-    }
-
-    /* ── Body copy ── */
+/* ── Body copy ── */
     .subtitle {
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
@@ -183,20 +171,7 @@
       <span class="std-date">DATE</span>
     </div>
 
-    <!--
-      ACTION REQUIRED: place Thumbnail.JPG at assets/images/Thumbnail.JPG
-      relative to this index.html in your GitHub repo.
-      The alt text is important for accessibility and SEO.
-    -->
-    <img
-      class="couple-photo"
-      src="assets/images/Thumbnail.JPG"
-      alt="Elisa and Arden at sunset over the ocean"
-      loading="eager"
-      decoding="async"
-    />
-
-    <p class="subtitle">for the wedding of</p>
+<p class="subtitle">for the wedding of</p>
 
     <p class="names">ELISA &amp; ARDEN</p>
 
