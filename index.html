@@ -239,6 +239,84 @@
       .card           { padding: 0 1.5rem 3rem; }
       .map-link       { width: 90%; }
     }
+    /* ══════════════════════════════════════
+       SECTION 3 — Itinerary
+    ══════════════════════════════════════ */
+    .itinerary-section {
+      width: 100%;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      /* Fills exactly one screen height */
+      min-height: 100vh;
+      padding: 0 15% 0;
+      box-sizing: border-box;
+    }
+
+    .day-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(3.5rem, 13vw, 11rem);
+      letter-spacing: 0.12em;
+      color: var(--brown);
+      line-height: 0.95;
+      margin-bottom: 0.6rem;
+      margin-top: 2.5rem;
+    }
+
+    .day-number {
+      font-size: clamp(4.725rem, 17.55vw, 14.85rem);
+      vertical-align: baseline;
+    }
+
+    .day-heading:first-child {
+      margin-top: 0;
+    }
+
+    .event-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+      font-size: clamp(1.6rem, 5.2vw, 3.6rem);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--black);
+      line-height: 1.1;
+      margin-bottom: 0.3rem;
+    }
+
+    .event-body {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 500;
+      font-size: clamp(0.85rem, 2vw, 1.1rem);
+      color: var(--light-brown);
+      letter-spacing: 0.04em;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+      max-width: 42ch;
+    }
+
+    .day-divider {
+      width: 2rem;
+      height: 1px;
+      background: var(--brown);
+      opacity: 0.4;
+      margin: 1.8rem 0;
+    }
+
+    .day-heading--right,
+    .event-title--right,
+    .event-body--right {
+      text-align: right;
+    }
+
+    .event-body--right {
+      max-width: 42ch;
+      margin-left: auto;
+      margin-right: 0;
+    }
+
   </style>
 </head>
 <body>
@@ -290,6 +368,26 @@
         title="Jumeirah Bali location map"
       ></iframe>
     </a>
+
+  </section>
+  <!-- ── Section 3: Itinerary ── -->
+  <section class="itinerary-section">
+
+    <!-- Day 1 -->
+    <p class="day-heading">Day <span class="day-number">1</span></p>
+
+    <p class="event-title">Welcome Dinner</p>
+    <p class="event-body">Wine and dine with friends and family.<br>Meet everyone over candlelit tables<br>and colorful sunset by the beach,<br>with live music and Bali festivities.</p>
+
+
+    <p class="day-heading day-heading--right">Day <span class="day-number">2</span></p>
+
+    <p class="event-title event-title--right">Ceremony</p>
+    <p class="event-title event-title--right">Cocktail Hour</p>
+    <p class="event-title event-title--right">Reception</p>
+    <p class="event-title event-title--right">After Party</p>
+
+    <p class="event-body event-body--right">A celebration of love, warmth, and joy<br>shared with the people who matter most.<br>Raise a glass, savor every moment,<br>as the night settles into memory.</p>
 
   </section>
 
