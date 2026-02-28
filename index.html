@@ -1033,8 +1033,8 @@
     const params = {
       action:             "submit",
       attending:          isAttending ? "Yes" : "No",
-      firstname:          isAttending ? document.getElementById("firstname").value.trim()  : "",
-      lastname:           isAttending ? document.getElementById("lastname").value.trim()   : "",
+      firstname:          document.getElementById("firstname").value.trim(),
+      lastname:           document.getElementById("lastname").value.trim(),
       phone:              isAttending ? document.getElementById("country-code").value + document.getElementById("phone").value.trim() : "",
       email:              isAttending ? document.getElementById("email").value.trim()      : "",
       dietary:            isAttending ? document.getElementById("dietary").value           : "",
