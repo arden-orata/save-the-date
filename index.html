@@ -888,26 +888,53 @@
     submitBtn.disabled = true;
   }
 
-  // ── Guest lookup on last name blur ──
-  document.getElementById("lastname").addEventListener("blur", async function () {
+  // ── Preload guest list from local JSON (fast, same-origin) ──
+  let guestList    = [];
+  let guestLoaded  = false;
+  let lookupTimer  = null;
+
+  fetch("assets/data/guests.json")
+    .then(r => r.json())
+    .then(data => {
+      guestList   = (data.guests || []).map(g => ({
+        firstname: g.firstname.trim().toLowerCase(),
+        lastname:  g.lastname.trim().toLowerCase(),
+        plus_one:  g.plus_one.trim()
+      }));
+      guestLoaded = true;
+    })
+    .catch(err => console.warn("Could not load guest list:", err));
+
+  // ── Instant in-memory lookup ──
+  function doLookup() {
     const firstname = document.getElementById("firstname").value.trim().toLowerCase();
-    const lastname  = this.value.trim().toLowerCase();
+    const lastname  = document.getElementById("lastname").value.trim().toLowerCase();
     resetForm();
     if (!firstname || !lastname) return;
 
-    try {
-      const data = await jsonp({ firstname, lastname }, "lookup_" + Date.now());
-      if (data.result === "found") {
-        guestFound   = true;
-        guestPlusOne = data.plus_one.toLowerCase().includes("yes");
-        attendanceBlock.style.display = "block";
-      } else {
-        guestError.style.display = "block";
-      }
-    } catch (err) {
-      console.error("Lookup error:", err);
+    const match = guestList.find(g => g.firstname === firstname && g.lastname === lastname);
+    if (match) {
+      guestFound   = true;
+      guestPlusOne = match.plus_one.toLowerCase().includes("yes");
+      attendanceBlock.style.display = "block";
+    } else {
       guestError.style.display = "block";
     }
+  }
+
+  document.getElementById("lastname").addEventListener("blur", function () {
+    clearTimeout(lookupTimer);
+    doLookup();
+  });
+
+  document.getElementById("lastname").addEventListener("input", function () {
+    clearTimeout(lookupTimer);
+    lookupTimer = setTimeout(doLookup, 400);
+  });
+
+  document.getElementById("firstname").addEventListener("blur", function () {
+    const lastname = document.getElementById("lastname").value.trim();
+    if (lastname) doLookup();
   });
 
   // ── Attendance radios ──
