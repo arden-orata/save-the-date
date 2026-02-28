@@ -1,6 +1,14 @@
 {
   "guests": [
-    { "firstname": "Leni", "lastname": "Peterson", "plus_one": "No" },
-    { "firstname": "Bryna", "lastname": "Djuhar", "plus_one": "Yes" }
+    {
+      "firstname": "Leni",
+      "lastname": "Peterson",
+      "plus_one": "No"
+    },
+    {
+      "firstname": "Bryna",
+      "lastname": "Djuhar",
+      "plus_one": "Yes"
+    }
   ]
 }
