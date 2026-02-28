@@ -871,11 +871,14 @@ function jsonp(params, callbackName) {
   document.getElementById("lastname").addEventListener("blur", async function () {
     const firstname = document.getElementById("firstname").value.trim().toLowerCase();
     const lastname  = this.value.trim().toLowerCase();
+    console.log("Blur fired. firstname:", firstname, "lastname:", lastname);
     resetForm();
     if (!firstname || !lastname) return;
 
     try {
+      console.log("Calling jsonp lookup...");
       const data = await jsonp({ firstname, lastname }, 'lookupCallback_' + Date.now());
+      console.log("Lookup result:", data);
       if (data.result === "found") {
         guestFound   = true;
         guestPlusOne = data.plus_one.toLowerCase().includes("yes");
@@ -884,6 +887,7 @@ function jsonp(params, callbackName) {
         guestError.style.display = "block";
       }
     } catch (err) {
+      console.error("Lookup error:", err);
       guestError.style.display = "block";
     }
   });
