@@ -523,11 +523,6 @@
       border-color: #e0d0c8;
     }
 
-    .submit-btn:disabled {
-      background: #d4b8a8;
-      cursor: not-allowed;
-    }
-
     #attending-fields {
       display: none;
       flex-direction: column;
@@ -537,6 +532,18 @@
 
     #attending-fields.visible {
       display: flex;
+    }
+
+    .submit-btn:disabled {
+      background: #d4b8a8;
+      cursor: not-allowed;
+    }
+
+    .form-field input::placeholder {
+      color: #c8b8b0;
+      font-style: italic;
+      text-transform: none;
+      letter-spacing: 0.05em;
     }
 
     @media (max-width: 480px) {
@@ -674,25 +681,25 @@
         We couldn't find your name on the guest list. Please check your entry.
       </p>
 
+      <!-- Plus One radio (shown only if guest has plus one entitlement and is attending) -->
+      <div class="form-field" id="plus-one-block" style="display:none;">
+        <label>Plus One</label>
+        <div class="attendance-options">
+          <label class="radio-option" id="radio-plus-yes">
+            <input type="radio" name="plus_one" value="yes" id="plus-yes" />
+            <span class="radio-custom"></span>
+            <span class="radio-label">Yes, I'm bringing someone</span>
+          </label>
+          <label class="radio-option" id="radio-plus-no">
+            <input type="radio" name="plus_one" value="no" id="plus-no" />
+            <span class="radio-custom"></span>
+            <span class="radio-label">No, just me</span>
+          </label>
+        </div>
+      </div>
+
       <!-- Fields shown only if attending -->
       <div id="attending-fields">
-
-        <!-- Plus One (shown only if guest has plus one entitlement) -->
-        <div class="form-field" id="plus-one-block" style="display:none;">
-          <label>Plus One</label>
-          <div class="attendance-options">
-            <label class="radio-option" id="radio-plus-yes">
-              <input type="radio" name="plus_one" value="yes" id="plus-yes" />
-              <span class="radio-custom"></span>
-              <span class="radio-label">Yes, I'm bringing someone</span>
-            </label>
-            <label class="radio-option" id="radio-plus-no">
-              <input type="radio" name="plus_one" value="no" id="plus-no" />
-              <span class="radio-custom"></span>
-              <span class="radio-label">No, just me</span>
-            </label>
-          </div>
-        </div>
 
         <!-- Plus One name + dietary (shown only if bringing someone) -->
         <div id="plus-one-fields" style="display:none; flex-direction:column; gap:1.2rem; width:100%;">
@@ -724,7 +731,7 @@
                 </select>
               </div>
               <div class="form-field dietary-other" id="plus-dietary-other-field">
-                <input type="text" id="plus-dietary-other" name="plus_dietary_other" placeholder="Please specify" />
+                <input type="text" id="plus-dietary-other" name="plus_dietary_other" placeholder="Add your other restriction here" />
               </div>
             </div>
           </div>
@@ -789,7 +796,7 @@
             </select>
           </div>
           <div class="form-field dietary-other" id="dietary-other-field">
-            <input type="text" id="dietary-other" name="dietary_other" placeholder="Please specify" />
+            <input type="text" id="dietary-other" name="dietary_other" placeholder="Add your other restriction here" />
           </div>
         </div>
       </div>
@@ -883,7 +890,7 @@
     const match = guestList.find(g => g.firstname === firstname && g.lastname === lastname);
     if (match) {
       guestFound   = true;
-      guestPlusOne = match.plus_one === "Yes, I'm bringing someone";
+      guestPlusOne = match.plus_one.toLowerCase().includes("yes");
       attendanceBlock.style.display = "block";
     } else {
       guestError.style.display = "block";
@@ -959,12 +966,13 @@
       submitBtn.disabled = true; return;
     }
 
-    if (guestPlusOne) {
+    // Only validate plus one if the block is actually visible
+    if (guestPlusOne && plusOneBlock.style.display !== "none") {
       if (!plusYes.checked && !plusNo.checked) { submitBtn.disabled = true; return; }
       if (plusYes.checked) {
-        const pFirst  = document.getElementById("plus-firstname").value.trim();
-        const pLast   = document.getElementById("plus-lastname").value.trim();
-        const pDiet   = document.getElementById("plus-dietary").value;
+        const pFirst   = document.getElementById("plus-firstname").value.trim();
+        const pLast    = document.getElementById("plus-lastname").value.trim();
+        const pDiet    = document.getElementById("plus-dietary").value;
         const pOtherOk = pDiet !== "others" || document.getElementById("plus-dietary-other").value.trim().length > 0;
         if (!pFirst || !pLast || !pOtherOk) { submitBtn.disabled = true; return; }
       }
@@ -999,7 +1007,7 @@
       await fetch(SCRIPT_URL, {
         method:  "POST",
         mode:    "no-cors",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "text/plain" },
         body:    JSON.stringify(payload)
       });
       submitBtn.textContent = "Submit";
