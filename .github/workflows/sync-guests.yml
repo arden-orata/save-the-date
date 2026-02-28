@@ -1,0 +1,56 @@
+name: Sync Guest List
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # every 30 minutes
+  workflow_dispatch:          # also allows manual trigger from GitHub UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Fetch guest list from Google Sheets
+        run: |
+          curl -L "${{ secrets.GUEST_SCRIPT_URL }}" -o raw.json
+          cat raw.json
+
+      - name: Transform to guests.json
+        run: |
+          python3 - << 'EOF'
+          import json
+
+          with open('raw.json') as f:
+              data = json.load(f)
+
+          if data.get('result') != 'success':
+              raise Exception('Failed to fetch guest list: ' + str(data))
+
+          guests = [
+              {
+                  'firstname': g['firstname'].strip(),
+                  'lastname':  g['lastname'].strip(),
+                  'plus_one':  g['plus_one'].strip()
+              }
+              for g in data.get('guests', [])
+              if g.get('firstname') and g.get('lastname')
+          ]
+
+          import os
+          os.makedirs('assets/data', exist_ok=True)
+          with open('assets/data/guests.json', 'w') as f:
+              json.dump({'guests': guests}, f, indent=2)
+
+          print(f'Wrote {len(guests)} guests to assets/data/guests.json')
+          EOF
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/data/guests.json
+          git diff --cached --quiet || git commit -m "chore: sync guest list from Google Sheets"
+          git push
