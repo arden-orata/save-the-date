@@ -814,7 +814,7 @@
 </html>
 
 <script>
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6OiFe24vL6Don3efbQkFtCmfqlcAfnOvE-rvEEysrG0of05A1Eafz7QwaeqGK0njW/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4lc6d6Z51bB2AJpdT0vxGMzlEIawrCHZBDZadFRNMFAU9jzLtd9mG-Z4wcBLeNt_S/exec";
 
   function toTitleCase(str) {
     return str.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
@@ -844,58 +844,50 @@
 
   let guestFound   = false;
   let guestPlusOne = false;
-  let guestList    = []; // preloaded on page load
 
-  // ── Preload guest list on page load ──
-  window.addEventListener("load", async () => {
-    try {
-      const res  = await fetch(SCRIPT_URL);
-      const data = await res.json();
-      if (data.result === "success") {
-        // Normalize all names to lowercase for instant comparison
-        guestList = data.guests.map(g => ({
-          firstname: g.firstname.trim().toLowerCase(),
-          lastname:  g.lastname.trim().toLowerCase(),
-          plus_one:  g.plus_one.trim()
-        }));
-      }
-    } catch (err) {
-      console.warn("Could not preload guest list:", err);
-    }
-  });
-
-  function resetForm() {
-    guestFound   = false;
-    guestPlusOne = false;
-    guestError.style.display      = "none";
-    attendanceBlock.style.display = "none";
-    attendingFields.classList.remove("visible");
-    plusOneBlock.style.display    = "none";
-    plusOneFields.style.display   = "none";
-    [attYes, attNo, plusYes, plusNo].forEach(r => r.checked = false);
-    ["radio-yes", "radio-no", "radio-plus-yes", "radio-plus-no"].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.classList.remove("inactive");
+function jsonp(params, callbackName) {
+    return new Promise((resolve, reject) => {
+      const query = Object.entries(params)
+        .map(([k, v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v))
+        .join('&');
+      window[callbackName] = function(data) {
+        delete window[callbackName];
+        document.getElementById('jsonp-' + callbackName)?.remove();
+        resolve(data);
+      };
+      const script  = document.createElement('script');
+      script.id     = 'jsonp-' + callbackName;
+      script.src    = SCRIPT_URL + '?' + query + '&callback=' + callbackName;
+      script.onerror = () => {
+        delete window[callbackName];
+        script.remove();
+        reject(new Error('JSONP failed'));
+      };
+      document.head.appendChild(script);
     });
-    submitBtn.disabled = true;
   }
 
-  // ── Instant in-memory lookup on blur ──
-  document.getElementById("lastname").addEventListener("blur", function () {
+  // ── JSONP per-lookup on blur ──
+  document.getElementById("lastname").addEventListener("blur", async function () {
     const firstname = document.getElementById("firstname").value.trim().toLowerCase();
     const lastname  = this.value.trim().toLowerCase();
     resetForm();
     if (!firstname || !lastname) return;
 
-    const match = guestList.find(g => g.firstname === firstname && g.lastname === lastname);
-    if (match) {
-      guestFound   = true;
-      guestPlusOne = match.plus_one.toLowerCase().includes("yes");
-      attendanceBlock.style.display = "block";
-    } else {
+    try {
+      const data = await jsonp({ firstname, lastname }, 'lookupCallback_' + Date.now());
+      if (data.result === "found") {
+        guestFound   = true;
+        guestPlusOne = data.plus_one.toLowerCase().includes("yes");
+        attendanceBlock.style.display = "block";
+      } else {
+        guestError.style.display = "block";
+      }
+    } catch (err) {
       guestError.style.display = "block";
     }
   });
+
 
   attYes.addEventListener("change", function () {
     if (!this.checked) return;
@@ -981,11 +973,13 @@
     submitBtn.disabled = false;
   }
 
+
   submitBtn.addEventListener("click", async function () {
     const isAttending  = attYes.checked;
     const bringingPlus = isAttending && plusYes.checked;
 
-    const payload = {
+    const params = {
+      action:             'submit',
       attending:          isAttending  ? "Yes" : "No",
       firstname:          isAttending  ? document.getElementById("firstname").value.trim()  : "",
       lastname:           isAttending  ? document.getElementById("lastname").value.trim()   : "",
@@ -1004,17 +998,14 @@
     submitBtn.textContent = "Sending...";
 
     try {
-      await fetch(SCRIPT_URL, {
-        method:  "POST",
-        mode:    "no-cors",
-        headers: { "Content-Type": "text/plain" },
-        body:    JSON.stringify(payload)
-      });
+      const data = await jsonp(params, 'submitCallback');
+      console.log("Submit response:", data);
       submitBtn.textContent = "Submit";
       alert(isAttending
         ? "Thank you! We look forward to celebrating with you."
         : "We're sorry you're unable to make it. Thank you for letting us know.");
     } catch (err) {
+      console.error("Submit error:", err);
       submitBtn.disabled    = false;
       submitBtn.textContent = "Submit";
       alert("Something went wrong. Please try again.");
