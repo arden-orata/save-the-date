@@ -653,7 +653,7 @@
       </div>
 
       <!-- Attendance -->
-      <div class="form-field" style="margin-top: 0.5rem;">
+      <div class="form-field" id="attendance-block" style="display:none; margin-top: 0.5rem;">
         <label>Attendance</label>
         <div class="attendance-options">
           <label class="radio-option" id="radio-yes">
@@ -669,8 +669,66 @@
         </div>
       </div>
 
+      <!-- Guest not found error -->
+      <p id="guest-error" style="display:none; font-family:'Cormorant Garamond',serif; font-style:italic; color:#c0392b; font-size:clamp(0.9rem,2vw,1.1rem); margin-top:0.5rem;">
+        We couldn't find your name on the guest list. Please check your entry.
+      </p>
+
       <!-- Fields shown only if attending -->
       <div id="attending-fields">
+
+        <!-- Plus One (shown only if guest has plus one entitlement) -->
+        <div class="form-field" id="plus-one-block" style="display:none;">
+          <label>Plus One</label>
+          <div class="attendance-options">
+            <label class="radio-option" id="radio-plus-yes">
+              <input type="radio" name="plus_one" value="yes" id="plus-yes" />
+              <span class="radio-custom"></span>
+              <span class="radio-label">Yes, I'm bringing someone</span>
+            </label>
+            <label class="radio-option" id="radio-plus-no">
+              <input type="radio" name="plus_one" value="no" id="plus-no" />
+              <span class="radio-custom"></span>
+              <span class="radio-label">No, just me</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Plus One name + dietary (shown only if bringing someone) -->
+        <div id="plus-one-fields" style="display:none; flex-direction:column; gap:1.2rem; width:100%;">
+          <div class="form-row">
+            <div class="form-field">
+              <label for="plus-firstname">Plus One First Name</label>
+              <input type="text" id="plus-firstname" name="plus_firstname" autocomplete="off" inputmode="text" />
+            </div>
+            <div class="form-field">
+              <label for="plus-lastname">Plus One Last Name</label>
+              <input type="text" id="plus-lastname" name="plus_lastname" autocomplete="off" inputmode="text" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Plus One Dietary Restriction</label>
+            <div class="dietary-row">
+              <div class="form-field dietary-select">
+                <select id="plus-dietary" name="plus_dietary" aria-label="Plus one dietary restriction">
+                  <option value="none">None</option>
+                  <option value="vegetarian">Vegetarian</option>
+                  <option value="vegan">Vegan</option>
+                  <option value="gluten-free">Gluten-Free</option>
+                  <option value="halal">Halal</option>
+                  <option value="kosher">Kosher</option>
+                  <option value="nut-allergy">Nut Allergy</option>
+                  <option value="dairy-free">Dairy-Free</option>
+                  <option value="seafood-allergy">Seafood Allergy</option>
+                  <option value="others">Others</option>
+                </select>
+              </div>
+              <div class="form-field dietary-other" id="plus-dietary-other-field">
+                <input type="text" id="plus-dietary-other" name="plus_dietary_other" placeholder="Please specify" />
+              </div>
+            </div>
+          </div>
+        </div>
 
       <!-- Mobile -->
       <div class="form-field">
@@ -701,14 +759,7 @@
             </select>
           </div>
           <div class="form-field phone-number">
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              inputmode="numeric"
-              placeholder="812 3456 7890"
-              autocomplete="tel-national"
-            />
+            <input type="tel" id="phone" name="phone" inputmode="numeric" placeholder="812 3456 7890" autocomplete="tel-national" />
           </div>
         </div>
       </div>
@@ -716,14 +767,7 @@
       <!-- Email -->
       <div class="form-field">
         <label for="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          autocomplete="email"
-          inputmode="email"
-          placeholder="you@example.com"
-        />
+        <input type="email" id="email" name="email" autocomplete="email" inputmode="email" placeholder="you@example.com" />
       </div>
 
       <!-- Dietary Restriction -->
@@ -745,12 +789,7 @@
             </select>
           </div>
           <div class="form-field dietary-other" id="dietary-other-field">
-            <input
-              type="text"
-              id="dietary-other"
-              name="dietary_other"
-              placeholder="Please specify"
-            />
+            <input type="text" id="dietary-other" name="dietary_other" placeholder="Please specify" />
           </div>
         </div>
       </div>
@@ -768,114 +807,193 @@
 </html>
 
 <script>
-  // ── Title Case helper ──
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwgHhuiEo7f5mvFmubuRr2b2quBkPLGfmBLskbOg0DIC1MAZguLL0kH_aciCzXhMaw2/exec";
+
   function toTitleCase(str) {
     return str.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
   }
 
-  ['firstname', 'lastname'].forEach(id => {
+  ["firstname", "lastname", "plus-firstname", "plus-lastname"].forEach(id => {
     const el = document.getElementById(id);
-    el.addEventListener('blur', () => {
-      el.value = toTitleCase(el.value.trim());
+    if (el) el.addEventListener("blur", () => { el.value = toTitleCase(el.value.trim()); });
+  });
+
+  document.getElementById("phone").addEventListener("input", function () {
+    this.value = this.value.replace(/\D/g, "");
+  });
+
+  const attYes          = document.getElementById("att-yes");
+  const attNo           = document.getElementById("att-no");
+  const radioYes        = document.getElementById("radio-yes");
+  const radioNo         = document.getElementById("radio-no");
+  const attendanceBlock = document.getElementById("attendance-block");
+  const attendingFields = document.getElementById("attending-fields");
+  const guestError      = document.getElementById("guest-error");
+  const plusOneBlock    = document.getElementById("plus-one-block");
+  const plusOneFields   = document.getElementById("plus-one-fields");
+  const plusYes         = document.getElementById("plus-yes");
+  const plusNo          = document.getElementById("plus-no");
+  const submitBtn       = document.getElementById("submit-btn");
+
+  let guestFound   = false;
+  let guestPlusOne = false;
+
+  function resetForm() {
+    guestFound   = false;
+    guestPlusOne = false;
+    guestError.style.display      = "none";
+    attendanceBlock.style.display = "none";
+    attendingFields.classList.remove("visible");
+    plusOneBlock.style.display    = "none";
+    plusOneFields.style.display   = "none";
+    [attYes, attNo, plusYes, plusNo].forEach(r => r.checked = false);
+    ["radio-yes", "radio-no", "radio-plus-yes", "radio-plus-no"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove("inactive");
     });
-  });
-
-  // Phone: digits only
-  document.getElementById('phone').addEventListener('input', function () {
-    this.value = this.value.replace(/\D/g, '');
-  });
-
-  // Dietary others toggle
-  document.getElementById('dietary').addEventListener('change', function () {
-    const otherField = document.getElementById('dietary-other-field');
-    otherField.classList.toggle('visible', this.value === 'others');
-    if (this.value !== 'others') document.getElementById('dietary-other').value = '';
-    checkFormValidity();
-  });
-
-  // ── Attendance radio logic ──
-  const attYes     = document.getElementById('att-yes');
-  const attNo      = document.getElementById('att-no');
-  const radioYes   = document.getElementById('radio-yes');
-  const radioNo    = document.getElementById('radio-no');
-  const fields     = document.getElementById('attending-fields');
-  const submitBtn  = document.getElementById('submit-btn');
-
-  function checkFormValidity() {
-    const attending = attYes.checked || attNo.checked;
-    if (!attending) { submitBtn.disabled = true; return; }
-
-    if (attNo.checked) { submitBtn.disabled = false; return; }
-
-    // Yes selected — check all visible required fields
-    const firstname = document.getElementById('firstname').value.trim();
-    const lastname  = document.getElementById('lastname').value.trim();
-    const phone     = document.getElementById('phone').value.trim();
-    const email     = document.getElementById('email').value.trim();
-    const emailRe   = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const dietary   = document.getElementById('dietary').value;
-    const otherVal  = document.getElementById('dietary-other').value.trim();
-    const otherOk   = dietary !== 'others' || otherVal.length > 0;
-
-    submitBtn.disabled = !(firstname && lastname && phone && emailRe.test(email) && otherOk);
+    submitBtn.disabled = true;
   }
 
-  attYes.addEventListener('change', function () {
-    if (this.checked) {
-      fields.classList.add('visible');
-      radioNo.classList.add('inactive');
-      radioYes.classList.remove('inactive');
-    }
-    checkFormValidity();
-  });
-
-  attNo.addEventListener('change', function () {
-    if (this.checked) {
-      fields.classList.remove('visible');
-      radioYes.classList.add('inactive');
-      radioNo.classList.remove('inactive');
-    }
-    checkFormValidity();
-  });
-
-  // Re-check validity on any input change
-  ['firstname', 'lastname', 'phone', 'email'].forEach(id => {
-    document.getElementById(id).addEventListener('input', checkFormValidity);
-  });
-
-  // Submit
-  submitBtn.addEventListener('click', async function () {
-    const payload = {
-      attending:     attYes.checked ? 'Yes' : 'No',
-      firstname:     document.getElementById('firstname').value.trim(),
-      lastname:      document.getElementById('lastname').value.trim(),
-      phone:         document.getElementById('country-code').value + document.getElementById('phone').value.trim(),
-      email:         document.getElementById('email').value.trim(),
-      dietary:       document.getElementById('dietary').value,
-      dietary_other: document.getElementById('dietary-other').value.trim()
-    };
-
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending...';
-
+  document.getElementById("lastname").addEventListener("blur", async function () {
+    const firstname = document.getElementById("firstname").value.trim();
+    const lastname  = this.value.trim();
+    resetForm();
+    if (!firstname || !lastname) return;
     try {
-      await fetch('https://script.google.com/macros/s/AKfycbzFqfEJNVstucY3yL9Ty4_YQdpuUFgecl73uH-8iQVtULny1Kk_fZvgMT51jYwYv53z/exec', {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      submitBtn.textContent = 'Submit';
-      if (attNo.checked) {
-        alert('We\'re sorry you\'re unable to make it. Thank you for letting us know.');
+      const res  = await fetch(SCRIPT_URL + "?firstname=" + encodeURIComponent(firstname) + "&lastname=" + encodeURIComponent(lastname));
+      const data = await res.json();
+      if (data.result === "found") {
+        guestFound   = true;
+        guestPlusOne = data.plus_one === "Yes, I'm bringing someone";
+        attendanceBlock.style.display = "block";
       } else {
-        alert('Thank you! We look forward to celebrating with you.');
+        guestError.style.display = "block";
       }
     } catch (err) {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Submit';
-      alert('Something went wrong. Please try again.');
+      guestError.style.display = "block";
+    }
+  });
+
+  attYes.addEventListener("change", function () {
+    if (!this.checked) return;
+    attendingFields.classList.add("visible");
+    radioNo.classList.add("inactive");
+    radioYes.classList.remove("inactive");
+    if (guestPlusOne) plusOneBlock.style.display = "block";
+    checkValidity();
+  });
+
+  attNo.addEventListener("change", function () {
+    if (!this.checked) return;
+    attendingFields.classList.remove("visible");
+    plusOneBlock.style.display  = "none";
+    plusOneFields.style.display = "none";
+    radioYes.classList.add("inactive");
+    radioNo.classList.remove("inactive");
+    checkValidity();
+  });
+
+  plusYes.addEventListener("change", function () {
+    if (!this.checked) return;
+    plusOneFields.style.display = "flex";
+    document.getElementById("radio-plus-no").classList.add("inactive");
+    document.getElementById("radio-plus-yes").classList.remove("inactive");
+    checkValidity();
+  });
+
+  plusNo.addEventListener("change", function () {
+    if (!this.checked) return;
+    plusOneFields.style.display = "none";
+    document.getElementById("radio-plus-yes").classList.add("inactive");
+    document.getElementById("radio-plus-no").classList.remove("inactive");
+    checkValidity();
+  });
+
+  document.getElementById("dietary").addEventListener("change", function () {
+    document.getElementById("dietary-other-field").classList.toggle("visible", this.value === "others");
+    if (this.value !== "others") document.getElementById("dietary-other").value = "";
+    checkValidity();
+  });
+
+  document.getElementById("plus-dietary").addEventListener("change", function () {
+    document.getElementById("plus-dietary-other-field").classList.toggle("visible", this.value === "others");
+    if (this.value !== "others") document.getElementById("plus-dietary-other").value = "";
+    checkValidity();
+  });
+
+  ["firstname", "lastname", "phone", "email", "dietary-other", "plus-firstname", "plus-lastname", "plus-dietary-other"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("input", checkValidity);
+  });
+
+  function checkValidity() {
+    if (!guestFound) { submitBtn.disabled = true; return; }
+    if (attNo.checked) { submitBtn.disabled = false; return; }
+    if (!attYes.checked) { submitBtn.disabled = true; return; }
+
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const firstname = document.getElementById("firstname").value.trim();
+    const lastname  = document.getElementById("lastname").value.trim();
+    const phone     = document.getElementById("phone").value.trim();
+    const email     = document.getElementById("email").value.trim();
+    const dietary   = document.getElementById("dietary").value;
+    const otherOk   = dietary !== "others" || document.getElementById("dietary-other").value.trim().length > 0;
+
+    if (!firstname || !lastname || !phone || !emailRe.test(email) || !otherOk) {
+      submitBtn.disabled = true; return;
+    }
+
+    if (guestPlusOne) {
+      if (!plusYes.checked && !plusNo.checked) { submitBtn.disabled = true; return; }
+      if (plusYes.checked) {
+        const pFirst  = document.getElementById("plus-firstname").value.trim();
+        const pLast   = document.getElementById("plus-lastname").value.trim();
+        const pDiet   = document.getElementById("plus-dietary").value;
+        const pOtherOk = pDiet !== "others" || document.getElementById("plus-dietary-other").value.trim().length > 0;
+        if (!pFirst || !pLast || !pOtherOk) { submitBtn.disabled = true; return; }
+      }
+    }
+
+    submitBtn.disabled = false;
+  }
+
+  submitBtn.addEventListener("click", async function () {
+    const isAttending  = attYes.checked;
+    const bringingPlus = isAttending && plusYes.checked;
+
+    const payload = {
+      attending:          isAttending  ? "Yes" : "No",
+      firstname:          isAttending  ? document.getElementById("firstname").value.trim()  : "",
+      lastname:           isAttending  ? document.getElementById("lastname").value.trim()   : "",
+      phone:              isAttending  ? document.getElementById("country-code").value + document.getElementById("phone").value.trim() : "",
+      email:              isAttending  ? document.getElementById("email").value.trim()      : "",
+      dietary:            isAttending  ? document.getElementById("dietary").value           : "",
+      dietary_other:      isAttending  ? document.getElementById("dietary-other").value.trim() : "",
+      plus_one:           isAttending && guestPlusOne ? (bringingPlus ? "Yes" : "No") : "",
+      plus_firstname:     bringingPlus ? document.getElementById("plus-firstname").value.trim()     : "",
+      plus_lastname:      bringingPlus ? document.getElementById("plus-lastname").value.trim()      : "",
+      plus_dietary:       bringingPlus ? document.getElementById("plus-dietary").value              : "",
+      plus_dietary_other: bringingPlus ? document.getElementById("plus-dietary-other").value.trim() : ""
+    };
+
+    submitBtn.disabled    = true;
+    submitBtn.textContent = "Sending...";
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method:  "POST",
+        mode:    "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(payload)
+      });
+      submitBtn.textContent = "Submit";
+      alert(isAttending
+        ? "Thank you! We look forward to celebrating with you."
+        : "We're sorry you're unable to make it. Thank you for letting us know.");
+    } catch (err) {
+      submitBtn.disabled    = false;
+      submitBtn.textContent = "Submit";
+      alert("Something went wrong. Please try again.");
     }
   });
 </script>
