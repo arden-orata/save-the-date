@@ -178,6 +178,24 @@
       left: 0;
     }
 
+
+    /* ══════════════════════════════════════
+       SECTION 2b — Sunset full-bleed image
+    ══════════════════════════════════════ */
+    .sunset-section {
+      width: 100%;
+      aspect-ratio: 1071 / 2000;
+      overflow: hidden;
+      display: block;
+      line-height: 0;   /* removes inline-block gap */
+    }
+
+    .sunset-section img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
     /* ══════════════════════════════════════
        SECTION 3 — Itinerary
     ══════════════════════════════════════ */
@@ -476,6 +494,19 @@
         loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Jumeirah Bali location map">
       </iframe>
     </a>
+  </section>
+
+
+  <!-- ── Section 2b: Sunset image ── -->
+  <section class="sunset-section">
+    <img
+      src="assets/images/Sunset_001.webp"
+      alt="Sunset view at Jumeirah Bali"
+      loading="lazy"
+      decoding="async"
+      width="1071"
+      height="2000"
+    />
   </section>
 
   <!-- ── Section 3: Itinerary ── -->
