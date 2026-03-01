@@ -92,8 +92,10 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       width: 100%;
       max-width: 680px;
+      min-height: 100dvh;
       background: var(--bg);
       animation: floatIn 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
       opacity: 0;
@@ -145,7 +147,7 @@
       align-items: center;
       justify-content: flex-start;
       padding: 3.5rem 2rem 5rem;
-      background-image: url('assets/images/Balibackground.webp');
+      background-image: url('assets/images/Balibackground.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -469,7 +471,7 @@
 <body>
 
   <!-- ── Section 1: Save the Date ── -->
-  <div class="card" style="margin-top: 9vh;">
+  <div class="card">
     <div class="std-block">
       <span class="std-save t-display">SAVE</span>
       <span class="std-the">the</span>
@@ -502,6 +504,18 @@
     <img
       src="assets/images/Sunset.png"
       alt="Sunset view at Jumeirah Bali"
+      loading="eager"
+      decoding="async"
+      width="1071"
+      height="2000"
+    />
+  </section>
+
+  <!-- ── Section 2c: Fountain image ── -->
+  <section class="sunset-section">
+    <img
+      src="assets/images/Fountain.png"
+      alt="Fountain at Jumeirah Bali"
       loading="eager"
       decoding="async"
       width="1071"
