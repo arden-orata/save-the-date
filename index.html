@@ -95,8 +95,8 @@
       justify-content: center;
       width: 100%;
       max-width: 680px;
-      min-height: 100dvh;
-      height: 100dvh;
+      min-height: var(--hero-h, 100vh);
+      height: var(--hero-h, 100vh);
       background: var(--bg);
       animation: floatIn 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
       opacity: 0;
@@ -479,6 +479,14 @@
     }
 
   </style>
+  <script>
+    // Capture the true visible viewport height once on load.
+    // dvh recalculates as Safari's chrome collapses during scroll,
+    // causing layout shifts. We freeze it here and never update it.
+    document.documentElement.style.setProperty(
+      '--hero-h', window.innerHeight + 'px'
+    );
+  </script>
 </head>
 <body>
 
@@ -524,6 +532,7 @@
 
 
   <!-- ── Section 2b: Sunset image ── -->
+  <section class="full-bleed-section" style="margin-top: -2px;">
   <section class="full-bleed-section">
     <img
       src="assets/images/Sunset.png"
