@@ -18,6 +18,7 @@
   <meta name="twitter:description" content="❤️" />
   <meta name="twitter:image"       content="https://arden-orata.github.io/save-the-date/assets/images/Thumbnail.JPG" />
 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css" />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Great+Vibes&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet" />
 
   <style>
@@ -277,38 +278,41 @@
     .form-field select {
       font-family: var(--font-sans);
       font-weight: 400;
-      font-size: clamp(1rem, 2.6vw, 1.4rem);
-      letter-spacing: 0.15em;
+      font-size: clamp(0.85rem, 2.2vw, 1rem);
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--black);
-      background: transparent;
-      border: none;
-      border-bottom: 1px solid var(--border);
-      padding: 0.4rem 0;
+      background: #fff;
+      border: 1px solid var(--border);
+      padding: 0.6rem 0.75rem;
       outline: none;
       width: 100%;
-      border-radius: 0;
+      border-radius: 4px;
       -webkit-appearance: none;
       appearance: none;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
     .form-field input:focus,
-    .form-field select:focus { border-bottom-color: var(--brown); }
+    .form-field select:focus {
+      border-color: var(--brown);
+      box-shadow: 0 0 0 2px rgba(200,150,122,0.15);
+    }
 
     .form-field select {
       cursor: pointer;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c8967a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-color: #fff;
       background-repeat: no-repeat;
-      background-position: right 0.5rem center;
-      padding-right: 1.5rem;
+      background-position: right 0.75rem center;
+      padding-right: 2rem;
     }
 
     .form-field input::placeholder {
       color: #c8b8b0;
       font-style: italic;
       text-transform: none;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.03em;
     }
 
     .mobile-row {
@@ -317,13 +321,18 @@
       align-items: flex-end;
     }
 
-    .mobile-row .country-code input {
-      text-transform: none;
-      letter-spacing: 0.05em;
-    }
-
-    .mobile-row .country-code { flex: 0 0 38%; }
+    .mobile-row .country-code { flex: 0 0 auto; }
     .mobile-row .phone-number  { flex: 1; }
+
+    /* intl-tel-input overrides to match form style */
+    .iti { width: 100%; }
+    .iti__flag-container { border-right: 1px solid var(--border); }
+    .iti__selected-flag  { background: #fff; border-radius: 4px 0 0 4px; padding: 0 0.5rem; }
+    .iti__selected-flag:hover,
+    .iti__selected-flag:focus { background: #f5ede8; }
+    .iti__country-list   { border-color: var(--border); box-shadow: 0 4px 16px rgba(0,0,0,0.10); }
+    .iti__country.iti__highlight { background: #f5ede8; }
+    #phone { border-radius: 0 4px 4px 0; border-left: none; }
 
     .dietary-row {
       display: flex;
@@ -581,21 +590,9 @@
         <!-- Mobile -->
         <div class="form-field">
           <label>Mobile Number</label>
-          <div class="mobile-row">
-            <div class="form-field country-code">
-              <input
-                type="text"
-                id="country-code"
-                name="country_code"
-                list="country-list"
-                placeholder="+62 Indonesia"
-                autocomplete="off"
-                aria-label="Country code"
-              />
-              <datalist id="country-list"></datalist>
-            </div>
-            <div class="form-field phone-number">
-              <input type="tel" id="phone" name="phone" inputmode="numeric" placeholder="812 3456 7890" autocomplete="tel-national" />
+          <div class="mobile-row" style="align-items:stretch;">
+            <div class="form-field" style="flex:1;">
+              <input type="tel" id="phone" name="phone" inputmode="numeric" placeholder="812 3456 7890" autocomplete="tel" />
             </div>
           </div>
         </div>
@@ -630,6 +627,7 @@
 </body>
 </html>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwUMiPLYpB8K7wILF3PEiM7lhkAKqYXLdkM3_M2EkgFXk0pMAl9oahh_vnQ_oLVDFPB/exec";
 
@@ -639,68 +637,20 @@
     document.getElementById(id).appendChild(dietaryTemplate.content.cloneNode(true));
   });
 
-  // ── Populate country datalist ──
-  const COUNTRIES = [
-    ['+93','Afghanistan'],['+355','Albania'],['+213','Algeria'],['+376','Andorra'],['+244','Angola'],
-    ['+1268','Antigua and Barbuda'],['+54','Argentina'],['+374','Armenia'],['+61','Australia'],
-    ['+43','Austria'],['+994','Azerbaijan'],['+1242','Bahamas'],['+973','Bahrain'],['+880','Bangladesh'],
-    ['+1246','Barbados'],['+375','Belarus'],['+32','Belgium'],['+501','Belize'],['+229','Benin'],
-    ['+975','Bhutan'],['+591','Bolivia'],['+387','Bosnia and Herzegovina'],['+267','Botswana'],
-    ['+55','Brazil'],['+673','Brunei'],['+359','Bulgaria'],['+226','Burkina Faso'],['+257','Burundi'],
-    ['+238','Cape Verde'],['+855','Cambodia'],['+237','Cameroon'],['+1','Canada'],['+236','Central African Republic'],
-    ['+235','Chad'],['+56','Chile'],['+86','China'],['+57','Colombia'],['+269','Comoros'],
-    ['+242','Congo'],['+506','Costa Rica'],['+385','Croatia'],['+53','Cuba'],['+357','Cyprus'],
-    ['+420','Czech Republic'],['+45','Denmark'],['+253','Djibouti'],['+1767','Dominica'],
-    ['+1809','Dominican Republic'],['+593','Ecuador'],['+20','Egypt'],['+503','El Salvador'],
-    ['+240','Equatorial Guinea'],['+291','Eritrea'],['+372','Estonia'],['+268','Eswatini'],
-    ['+251','Ethiopia'],['+679','Fiji'],['+358','Finland'],['+33','France'],['+241','Gabon'],
-    ['+220','Gambia'],['+995','Georgia'],['+49','Germany'],['+233','Ghana'],['+30','Greece'],
-    ['+1473','Grenada'],['+502','Guatemala'],['+224','Guinea'],['+245','Guinea-Bissau'],['+592','Guyana'],
-    ['+509','Haiti'],['+504','Honduras'],['+36','Hungary'],['+354','Iceland'],['+91','India'],
-    ['+62','Indonesia'],['+98','Iran'],['+964','Iraq'],['+353','Ireland'],['+972','Israel'],
-    ['+39','Italy'],['+1876','Jamaica'],['+81','Japan'],['+962','Jordan'],['+7','Kazakhstan'],
-    ['+254','Kenya'],['+686','Kiribati'],['+383','Kosovo'],['+965','Kuwait'],['+996','Kyrgyzstan'],
-    ['+856','Laos'],['+371','Latvia'],['+961','Lebanon'],['+266','Lesotho'],['+231','Liberia'],
-    ['+218','Libya'],['+423','Liechtenstein'],['+370','Lithuania'],['+352','Luxembourg'],
-    ['+261','Madagascar'],['+265','Malawi'],['+60','Malaysia'],['+960','Maldives'],['+223','Mali'],
-    ['+356','Malta'],['+692','Marshall Islands'],['+222','Mauritania'],['+230','Mauritius'],
-    ['+52','Mexico'],['+691','Micronesia'],['+373','Moldova'],['+377','Monaco'],['+976','Mongolia'],
-    ['+382','Montenegro'],['+212','Morocco'],['+258','Mozambique'],['+95','Myanmar'],['+264','Namibia'],
-    ['+674','Nauru'],['+977','Nepal'],['+31','Netherlands'],['+64','New Zealand'],['+505','Nicaragua'],
-    ['+227','Niger'],['+234','Nigeria'],['+389','North Macedonia'],['+47','Norway'],['+968','Oman'],
-    ['+92','Pakistan'],['+680','Palau'],['+507','Panama'],['+675','Papua New Guinea'],['+595','Paraguay'],
-    ['+51','Peru'],['+63','Philippines'],['+48','Poland'],['+351','Portugal'],['+974','Qatar'],
-    ['+40','Romania'],['+7','Russia'],['+250','Rwanda'],['+1869','Saint Kitts and Nevis'],
-    ['+1758','Saint Lucia'],['+1784','Saint Vincent'],['+685','Samoa'],['+378','San Marino'],
-    ['+239','Sao Tome and Principe'],['+966','Saudi Arabia'],['+221','Senegal'],['+381','Serbia'],
-    ['+248','Seychelles'],['+232','Sierra Leone'],['+65','Singapore'],['+421','Slovakia'],
-    ['+386','Slovenia'],['+677','Solomon Islands'],['+252','Somalia'],['+27','South Africa'],
-    ['+211','South Sudan'],['+34','Spain'],['+94','Sri Lanka'],['+249','Sudan'],['+597','Suriname'],
-    ['+46','Sweden'],['+41','Switzerland'],['+963','Syria'],['+886','Taiwan'],['+992','Tajikistan'],
-    ['+255','Tanzania'],['+66','Thailand'],['+670','Timor-Leste'],['+228','Togo'],['+676','Tonga'],
-    ['+1868','Trinidad and Tobago'],['+216','Tunisia'],['+90','Turkey'],['+993','Turkmenistan'],
-    ['+688','Tuvalu'],['+256','Uganda'],['+380','Ukraine'],['+971','UAE'],['+44','United Kingdom'],
-    ['+1','United States'],['+598','Uruguay'],['+998','Uzbekistan'],['+678','Vanuatu'],
-    ['+58','Venezuela'],['+84','Vietnam'],['+967','Yemen'],['+260','Zambia'],['+263','Zimbabwe'],
-  ];
-
-  const countryInput    = document.getElementById("country-code");
-  const countryDatalist = document.getElementById("country-list");
-
-  COUNTRIES.forEach(([code, name]) => {
-    const opt   = document.createElement("option");
-    opt.value   = code + " " + name;
-    opt.dataset.code = code;
-    countryDatalist.appendChild(opt);
+  // ── intl-tel-input ──
+  const iti = intlTelInput(document.getElementById("phone"), {
+    initialCountry:  "id",
+    separateDialCode: true,
+    preferredCountries: ["id", "us", "gb", "au", "sg", "my"],
+    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
   });
 
-  // Default to Indonesia
-  countryInput.value = "+62 Indonesia";
-
-  // Extract just the dial code for submission
   function getCountryCode() {
-    const match = countryInput.value.match(/^(\+\d+)/);
-    return match ? match[1] : countryInput.value.trim();
+    return "+" + iti.getSelectedCountryData().dialCode;
+  }
+
+  function getPhoneNumber() {
+    return document.getElementById("phone").value.trim();
   }
 
   // ── Helpers ──
@@ -859,17 +809,18 @@
   setupDietary("dietary",      "dietary-other-field",      "dietary-other");
   setupDietary("plus-dietary", "plus-dietary-other-field", "plus-dietary-other");
 
-  // ── Email validation feedback ──
+  // ── Email validation feedback (only on blur, not while typing) ──
   const emailError = document.getElementById("email-error");
   const emailRe    = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   document.getElementById("email").addEventListener("input", function () {
-    const v = this.value.trim();
-    emailError.style.display = (v && !emailRe.test(v)) ? "block" : "none";
+    // While typing: hide error, just update submit state
+    emailError.style.display = "none";
     checkValidity();
   });
 
   document.getElementById("email").addEventListener("blur", function () {
+    // On leave: show error if invalid and non-empty
     const v = this.value.trim();
     emailError.style.display = (v && !emailRe.test(v)) ? "block" : "none";
   });
@@ -914,7 +865,7 @@
       attending:          isAttending ? "Yes" : "No",
       firstname:          val("firstname"),
       lastname:           val("lastname"),
-      phone:              isAttending ? getCountryCode() + val("phone") : "",
+      phone:              isAttending ? getCountryCode() + getPhoneNumber() : "",
       email:              isAttending ? val("email")       : "",
       dietary:            isAttending ? document.getElementById("dietary").value : "",
       dietary_other:      isAttending ? val("dietary-other") : "",
