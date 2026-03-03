@@ -50,6 +50,7 @@
       --color-placeholder: #c8b8b0;
       --color-inactive:    #e0d0c8;
       --color-error:       #c0392b;
+      --color-pastel-red:  #c0504a;
 
       --font-serif:  'Cormorant Garamond', serif;
       --font-sans:   'Jost', sans-serif;
@@ -244,6 +245,13 @@
       color: var(--color-black);
     }
 
+    .map-caption {
+      margin-top: 1.2rem;
+      color: var(--color-brown-dark);
+      font-size: clamp(0.85rem, 2vw, 1.1rem);
+      text-align: center;
+    }
+
     .map-link {
       display: block;
       width: 70%;
@@ -397,8 +405,15 @@
       letter-spacing: 0.15em;
       text-transform: uppercase;
       color: #fff;
-      min-height: 6rem;
     }
+
+    /* Per-day height overrides — keeps per-item spacing equal across
+       timelines with different item counts */
+    .sunset-overlay-section .event-timeline__times,
+    .sunset-overlay-section .event-timeline__events  { height: 7rem; }
+
+    .fountain-overlay-section .event-timeline__times,
+    .fountain-overlay-section .event-timeline__events { height: 9.33rem; } /* 3 gaps × same gap size as sunset */
 
     .event-timeline__times {
       text-align: right;
@@ -490,70 +505,6 @@
     }
 
     /* ================================================================
-       SECTION 3 — ITINERARY
-    ================================================================ */
-    .itinerary-section {
-      width: 100%;
-      background: var(--color-bg);
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      min-height: 100vh;
-      min-height: 100svh;
-      padding: 0 15%;
-    }
-
-    .itinerary-section .schedule-label {
-      margin-bottom: 1.4rem;
-    }
-
-    .day-heading {
-      margin-bottom: 0.6rem;
-      margin-top: 1.5rem;
-    }
-
-    .day-heading:first-of-type {
-      margin-top: 0;
-    }
-
-    .day-number {
-      font-size: clamp(4.725rem, 17.55vw, 14.85rem);
-      vertical-align: baseline;
-    }
-
-    .event-title {
-      line-height: 1.1;
-      margin-bottom: 0.3rem;
-    }
-
-    .event-body {
-      font-family: var(--font-serif);
-      font-style: italic;
-      font-weight: 500;
-      font-size: clamp(0.85rem, 2vw, 1.1rem);
-      color: var(--color-brown-dark);
-      letter-spacing: 0.04em;
-      line-height: 1.6;
-      margin-bottom: 1rem;
-      max-width: 42ch;
-    }
-
-    .event-body--last {
-      margin-bottom: 3rem;
-    }
-
-    .day-heading--right,
-    .event-title--right,
-    .event-body--right {
-      text-align: right;
-    }
-
-    .event-body--right {
-      margin-left: auto;
-      margin-right: 0;
-    }
-
-    /* ================================================================
        SECTION 4 — RSVP FORM
     ================================================================ */
     .rsvp-section {
@@ -575,6 +526,7 @@
       display: flex;
       flex-direction: column;
       gap: 1.2rem;
+      padding: 0 4px;   /* gives focus box-shadows 4px of space before the edge */
     }
 
     /* ── Form layout ── */
@@ -600,7 +552,12 @@
       color: var(--color-brown-dark);
     }
 
-    /* ── Inputs & selects ── */
+    /* Attendance and Plus One labels are section headings, not field labels —
+       they read better upright (non-italic) at this weight and size */
+    #attendance-block > label,
+    #plus-one-block > label {
+      font-style: normal;
+    }
     .form-field input,
     .form-field select {
       font-family: var(--font-sans);
@@ -609,8 +566,8 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--color-black);
-      background: #fff;
-      border: 1px solid var(--color-border);
+      background: #ffffff;
+      border: 0.75px solid var(--color-border);
       padding: 0.6rem 0.75rem;
       outline: none;
       width: 100%;
@@ -620,16 +577,27 @@
       transition: border-color 0.2s, box-shadow 0.2s;
     }
 
+    /* Suppress browser autofill yellow/blue background.
+       box-shadow inset is the only reliable cross-browser way to override
+       the -webkit-autofill background — background-color is ignored. */
+    .form-field input:-webkit-autofill,
+    .form-field input:-webkit-autofill:hover,
+    .form-field input:-webkit-autofill:focus {
+      -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+      -webkit-text-fill-color: var(--color-black);
+      transition: background-color 9999s ease-in-out 0s;
+    }
+
     .form-field input:focus,
     .form-field select:focus {
-      border-color: var(--color-brown);
+      border: 1.5px solid var(--color-brown);
       box-shadow: var(--focus-ring);
     }
 
     .form-field select {
       cursor: pointer;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c8967a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-      background-color: #fff;
+      background-color: #ffffff;
       background-repeat: no-repeat;
       background-position: right 0.75rem center;
       padding-right: 2rem;
@@ -642,26 +610,25 @@
       letter-spacing: 0.03em;
     }
 
-    /* ── Phone row ── */
-    .mobile-row {
+
+    /* ── intl-tel-input field overrides ──
+       Only the field display is styled here. The dropdown is left entirely
+       to the browser/OS so iOS uses its native wheel picker. */
+    .iti                      { width: 100%; }
+    .iti__selected-flag       { background: #ffffff; padding: 0 0.5rem; }
+    .iti__selected-flag:hover,
+    .iti__selected-flag:focus { background: #f5ede8; }
+    .iti__flag-container      { border-right: 0.75px solid var(--color-border); }
+    .iti__country.iti__highlight { background: #f5ede8; }
+    #phone                    { border-radius: var(--radius-sm); }
+
+    .phone-row {
       display: flex;
       gap: 0.75rem;
-      align-items: stretch;
+      align-items: flex-end;
     }
-
-    .mobile-row .phone-field {
-      flex: 1;
-    }
-
-    /* ── intl-tel-input vendor overrides ── */
-    .iti                             { width: 100%; }
-    .iti__flag-container             { border-right: 1px solid var(--color-border); }
-    .iti__selected-flag              { background: #fff; border-radius: var(--radius-sm) 0 0 var(--radius-sm); padding: 0 0.5rem; }
-    .iti__selected-flag:hover,
-    .iti__selected-flag:focus        { background: #f5ede8; }
-    .iti__country-list               { border-color: var(--color-border); box-shadow: var(--shadow-dropdown); }
-    .iti__country.iti__highlight     { background: #f5ede8; }
-    #phone                           { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; border-left: none; }
+    .phone-row .phone-code   { flex: 0 0 auto; width: 9rem; }
+    .phone-row .phone-number { flex: 1; }
 
     /* ── Dietary row ── */
     .dietary-row {
@@ -678,7 +645,6 @@
     .attendance-options {
       display: flex;
       gap: 2rem;
-      margin-top: 0.6rem;
     }
 
     .radio-option {
@@ -687,6 +653,7 @@
       gap: 0.6rem;
       cursor: pointer;
       user-select: none;
+      font-style: normal;
     }
 
     .radio-option input[type="radio"] {
@@ -723,8 +690,9 @@
     .radio-label {
       font-family: var(--font-sans);
       font-weight: 400;
+      font-style: normal;
       font-size: clamp(1rem, 2.6vw, 1.4rem);
-      letter-spacing: 0.15em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--color-black);
     }
@@ -732,72 +700,226 @@
     .radio-option.inactive .radio-label  { color: var(--color-placeholder); }
     .radio-option.inactive .radio-custom { border-color: var(--color-inactive); }
 
-    /* ── Conditional field groups ── */
-    #attendance-block             { display: none; margin-top: 0.5rem; }
-    #attendance-block.is-visible  { display: flex; flex-direction: column; }
+    /* ── Conditional field groups ──
+       overflow-y: hidden is required for the max-height reveal animation.
+       overflow-x must stay visible so focus box-shadows on inputs
+       aren't clipped at the left and right edges of the container.
+    ── */
+    #attendance-block {
+      overflow-x: visible;
+      overflow-y: hidden;
+      max-height: 0;
+      opacity: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 0 4px;
+      transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                  opacity    0.35s ease;
+    }
+    #attendance-block.is-visible {
+      max-height: 600px;
+      opacity: 1;
+      padding-top: 0.5rem;
+    }
 
-    #attending-fields             { display: none; flex-direction: column; gap: 1.2rem; width: 100%; }
-    #attending-fields.is-visible  { display: flex; }
+    #attending-fields {
+      overflow-x: visible;
+      overflow-y: hidden;
+      max-height: 0;
+      opacity: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      width: 100%;
+      padding: 0 4px;
+      transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                  opacity    0.35s ease;
+    }
+    #attending-fields.is-visible {
+      max-height: 1200px;
+      opacity: 1;
+    }
 
-    #plus-one-block               { display: none; }
-    #plus-one-block.is-visible    { display: block; }
+    #plus-one-block {
+      overflow-x: visible;
+      overflow-y: hidden;
+      max-height: 0;
+      opacity: 0;
+      padding: 0 4px;
+      transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                  opacity    0.35s ease;
+    }
+    #plus-one-block.is-visible {
+      max-height: 200px;
+      opacity: 1;
+    }
 
-    #plus-one-fields              { display: none; flex-direction: column; gap: 1.2rem; width: 100%; }
-    #plus-one-fields.is-visible   { display: flex; }
+    #plus-one-fields {
+      overflow-x: visible;
+      overflow-y: hidden;
+      max-height: 0;
+      opacity: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      width: 100%;
+      padding: 0 4px;
+      transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                  opacity    0.35s ease;
+    }
+    #plus-one-fields.is-visible {
+      max-height: 600px;
+      opacity: 1;
+    }
 
-    /* ── Submit ── */
+    /* Form frozen state — applied after successful submission.
+       pointer-events: none on the form prevents any further interaction.
+       Inputs visually dim to communicate they are no longer editable. */
+    .rsvp-form.is-submitted {
+      pointer-events: none;
+    }
+    .rsvp-form.is-submitted input,
+    .rsvp-form.is-submitted select {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    /* ── Submit ──
+       Fixed width + height + white-space: nowrap prevents the button from
+       reflowing vertically when text changes between states (Submit → loading
+       spinner → "See you there" / "Response received").
+       The spinner replaces the text node inside the button via JS — the button
+       dimensions never change regardless of what's inside it.
+    ── */
     .submit-btn {
       margin-top: 1.5rem;
-      align-self: flex-start;
+      align-self: center;
+      width: 16rem;
+      height: 3rem;                 /* fixed height — never grows with content */
+      white-space: nowrap;          /* never wraps text to a second line */
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       font-family: var(--font-sans);
-      font-weight: 400;
+      font-weight: 600;
       font-size: clamp(0.85rem, 2vw, 1rem);
       letter-spacing: 0.2em;
       text-transform: uppercase;
       color: var(--color-bg);
       background: var(--color-brown);
       border: none;
-      padding: 0.9rem 2.5rem;
+      border-radius: var(--radius-sm);
+      padding: 0 2.5rem;
       cursor: pointer;
       transition: background 0.2s;
     }
 
-    .submit-btn:hover    { background: var(--color-brown-dark); }
-    .submit-btn:disabled { background: var(--color-border); cursor: not-allowed; }
+    .submit-btn:hover:not(.is-inactive):not(.is-sent) { background: var(--color-brown-dark); }
+    .submit-btn:active:not(.is-inactive):not(.is-sent) { background: var(--color-brown-dark); }
+    .submit-btn.is-inactive { background: var(--color-border); cursor: default; -webkit-tap-highlight-color: transparent; }
+    .submit-btn.is-sent     { background: var(--color-border); cursor: default; }
 
-    /* ── Validation feedback ── */
+    /* ── Field error highlight — shown when submit attempted with missing fields ── */
+    .field-error input,
+    .field-error select {
+      background: #fdf0ee !important;
+      border-color: var(--color-pastel-red) !important;
+    }
+    .radio-error .radio-custom {
+      border-color: var(--color-pastel-red);
+      background: #fdf0ee;
+    }
+
+    /* Loading spinner — pure CSS, shown inside the button during the JSONP request.
+       Best practice: replace button content with a spinner rather than adding dots
+       or text, so the button size stays locked and the state is unambiguous. */
+    @keyframes btn-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .submit-btn__spinner {
+      display: inline-block;
+      width: 1.1em;
+      height: 1.1em;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: btn-spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    /* ── Validation feedback ──
+       Errors use the site's own italic serif in a muted terracotta rather than
+       a jarring red — this keeps the emotional tone warm even when correcting.
+       True validation failures (e.g. email format) use a slightly deeper tone
+       so they read as instructive rather than alarming.
+    ── */
     .guest-error {
-      display: none;
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
       font-family: var(--font-serif);
       font-style: italic;
-      color: var(--color-error);
-      font-size: clamp(0.9rem, 2vw, 1.1rem);
+      color: var(--color-pastel-red);
+      font-size: clamp(1rem, 2.4vw, 1.5rem);
+      transition: max-height 0.35s ease, opacity 0.3s ease, margin-top 0.3s ease;
+      margin-top: 0;
+    }
+
+    .guest-error.is-visible {
+      max-height: 4em;
+      opacity: 1;
       margin-top: 0.5rem;
     }
 
-    .guest-error.is-visible { display: block; }
-
     .email-error {
-      display: none;
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
       font-family: var(--font-serif);
       font-style: italic;
-      color: var(--color-error);
-      font-size: clamp(0.8rem, 1.8vw, 1rem);
+      color: var(--color-pastel-red);
+      font-size: clamp(1rem, 2.4vw, 1.5rem);
+      transition: max-height 0.35s ease, opacity 0.3s ease, margin-top 0.3s ease;
+      margin-top: 0;
+    }
+
+    .email-error.is-visible {
+      max-height: 3em;
+      opacity: 1;
       margin-top: 0.1rem;
     }
 
-    .email-error.is-visible { display: block; }
+    .submit-feedback {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2rem;
+      margin-top: 0.4rem;
+    }
 
     .submit-status {
       font-family: var(--font-serif);
       font-style: italic;
-      font-size: clamp(0.9rem, 2vw, 1.1rem);
-      margin-top: 0.75rem;
-      min-height: 1.4em;
-      color: var(--color-brown-dark);
+      font-size: clamp(1rem, 2.4vw, 1.5rem);
+      color: var(--color-pastel-red);
+      text-align: center;
+      margin: 0;
     }
 
-    .submit-status--error { color: var(--color-error); }
+    .submit-status--error { color: var(--color-pastel-red); }
+
+    .form-errors {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: clamp(1rem, 2.4vw, 1.5rem);
+      color: var(--color-pastel-red);
+      text-align: center;
+      line-height: 1.6;
+      margin: 0;
+    }
+    .form-errors:empty { display: none; }
     @media (max-width: 480px) {
       .card               { padding: 0 1.5rem 3rem; }
       .map-link           { width: 90%; }
@@ -875,6 +997,7 @@
           title="Jumeirah Bali location map"
         ></iframe>
       </a>
+      <p class="map-caption t-body">click to open in Google Maps</p>
     </div>
   </section>
 
@@ -981,34 +1104,6 @@
     </div>
   </section>
 
-  <!-- ════════════════════════════════════════
-       SECTION 3 — Itinerary
-  ════════════════════════════════════════ -->
-  <section class="itinerary-section">
-    <p class="venue-label t-label schedule-label">SCHEDULE</p>
-
-    <p class="day-heading t-display">Day <span class="day-number">1</span></p>
-    <p class="event-title t-names">Welcome Dinner</p>
-    <p class="event-body event-body--last">
-      Wine and dine with friends and family.<br />
-      Meet everyone over candlelit tables<br />
-      and colorful sunset by the beach<br />
-      with live music and Bali festivities.
-    </p>
-
-    <p class="day-heading day-heading--right t-display">Day <span class="day-number">2</span></p>
-    <p class="event-title event-title--right t-names">Ceremony</p>
-    <p class="event-title event-title--right t-names">Cocktail Hour</p>
-    <p class="event-title event-title--right t-names">Reception</p>
-    <p class="event-title event-title--right t-names">After Party</p>
-    <p class="event-body event-body--right">
-      Celebrate love, warmth, and joy<br />
-      with the people who matter most.<br />
-      Raise a glass and savor every moment<br />
-      as the night settles into memory.
-    </p>
-  </section>
-
   <!-- Dietary options template (reused for guest + plus one) -->
   <template id="dietary-options">
     <option value="none">None</option>
@@ -1054,66 +1149,27 @@
           <label class="radio-option" id="radio-yes">
             <input type="radio" name="attendance" value="yes" id="att-yes" />
             <span class="radio-custom"></span>
-            <span class="radio-label">YES, Attending</span>
+            <span class="radio-label">Joyfully accepts</span>
           </label>
           <label class="radio-option" id="radio-no">
             <input type="radio" name="attendance" value="no" id="att-no" />
             <span class="radio-custom"></span>
-            <span class="radio-label">NO, Unable to Attend</span>
+            <span class="radio-label">Regretfully declines</span>
           </label>
         </div>
       </div>
 
-      <!-- Plus One radio -->
-      <div class="form-field" id="plus-one-block">
-        <label>Plus One</label>
-        <div class="attendance-options">
-          <label class="radio-option" id="radio-plus-yes">
-            <input type="radio" name="plus_one" value="yes" id="plus-yes" />
-            <span class="radio-custom"></span>
-            <span class="radio-label">Yes, I'm bringing someone</span>
-          </label>
-          <label class="radio-option" id="radio-plus-no">
-            <input type="radio" name="plus_one" value="no" id="plus-no" />
-            <span class="radio-custom"></span>
-            <span class="radio-label">No, just me</span>
-          </label>
-        </div>
-      </div>
-
-      <!-- Attending fields (conditionally visible) -->
+      <!-- Attending fields (conditionally visible when guest selects YES)
+           Order: own contact details first, then ask about plus-one.
+           This follows progressive disclosure best practice — collect the
+           most certain information (yourself) before the conditional (guest). -->
       <div id="attending-fields">
-
-        <!-- Plus one name + dietary -->
-        <div id="plus-one-fields">
-          <div class="form-row">
-            <div class="form-field">
-              <label for="plus-firstname">Plus One First Name</label>
-              <input type="text" id="plus-firstname" name="plus_firstname" autocomplete="off" inputmode="text" />
-            </div>
-            <div class="form-field">
-              <label for="plus-lastname">Plus One Last Name</label>
-              <input type="text" id="plus-lastname" name="plus_lastname" autocomplete="off" inputmode="text" />
-            </div>
-          </div>
-          <div class="form-field">
-            <label>Plus One Dietary Restriction</label>
-            <div class="dietary-row">
-              <div class="form-field dietary-select">
-                <select id="plus-dietary" name="plus_dietary" aria-label="Plus one dietary restriction"></select>
-              </div>
-              <div class="form-field dietary-other" id="plus-dietary-other-field">
-                <input type="text" id="plus-dietary-other" name="plus_dietary_other" placeholder="Add your other restriction here" />
-              </div>
-            </div>
-          </div>
-        </div>
 
         <!-- Mobile -->
         <div class="form-field">
           <label>Mobile Number</label>
-          <div class="mobile-row">
-            <div class="form-field phone-field">
+          <div class="phone-row">
+            <div class="form-field phone-number">
               <input type="tel" id="phone" name="phone" inputmode="numeric" placeholder="812 3456 7890" autocomplete="tel" />
             </div>
           </div>
@@ -1123,7 +1179,7 @@
         <div class="form-field">
           <label for="email">Email</label>
           <input type="email" id="email" name="email" autocomplete="email" inputmode="email" placeholder="you@example.com" />
-          <span class="email-error" id="email-error">Please enter a valid email address</span>
+          <span class="email-error" id="email-error">Please make sure your email is valid</span>
         </div>
 
         <!-- Dietary -->
@@ -1134,15 +1190,61 @@
               <select id="dietary" name="dietary" aria-label="Dietary restriction"></select>
             </div>
             <div class="form-field dietary-other" id="dietary-other-field">
-              <input type="text" id="dietary-other" name="dietary_other" placeholder="Add your other restriction here" />
+              <input type="text" id="dietary-other" name="dietary_other" placeholder="Add here" />
             </div>
           </div>
         </div>
 
       </div><!-- /attending-fields -->
 
-      <button type="button" class="submit-btn" id="submit-btn" disabled>Submit</button>
-      <p class="submit-status" id="submit-status" aria-live="polite"></p>
+      <!-- Plus One radio — revealed after attending-fields so the guest
+           completes their own details before being asked about a companion -->
+      <div class="form-field" id="plus-one-block">
+        <label>Plus One</label>
+        <div class="attendance-options">
+          <label class="radio-option" id="radio-plus-yes">
+            <input type="radio" name="plus_one" value="yes" id="plus-yes" />
+            <span class="radio-custom"></span>
+            <span class="radio-label">Bringing a guest</span>
+          </label>
+          <label class="radio-option" id="radio-plus-no">
+            <input type="radio" name="plus_one" value="no" id="plus-no" />
+            <span class="radio-custom"></span>
+            <span class="radio-label">Attending solo</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Plus one fields — revealed only when plus-one radio = yes -->
+      <div id="plus-one-fields">
+        <div class="form-row">
+          <div class="form-field">
+            <label for="plus-firstname">Plus One First Name</label>
+            <input type="text" id="plus-firstname" name="plus_firstname" autocomplete="off" inputmode="text" />
+          </div>
+          <div class="form-field">
+            <label for="plus-lastname">Plus One Last Name</label>
+            <input type="text" id="plus-lastname" name="plus_lastname" autocomplete="off" inputmode="text" />
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Plus One Dietary Restriction</label>
+          <div class="dietary-row">
+            <div class="form-field dietary-select">
+              <select id="plus-dietary" name="plus_dietary" aria-label="Plus one dietary restriction"></select>
+            </div>
+            <div class="form-field dietary-other" id="plus-dietary-other-field">
+              <input type="text" id="plus-dietary-other" name="plus_dietary_other" placeholder="Add here" />
+            </div>
+          </div>
+        </div>
+      </div><!-- /plus-one-fields -->
+
+      <button type="button" class="submit-btn is-inactive" id="submit-btn">Submit</button>
+      <div class="submit-feedback">
+        <p class="submit-status" id="submit-status" aria-live="polite"></p>
+        <p class="form-errors" id="form-errors" aria-live="polite"></p>
+      </div>
 
     </div>
   </section>
@@ -1194,13 +1296,16 @@
       });
 
       /* ────────────────────────────────────────
-         intl-tel-input
+         intl-tel-input — field display only
+         The dropdown is left to the browser/OS default (no useFullscreenPopup
+         override) so iOS uses its native wheel picker, which works correctly.
+         The flag + dial code chip in the field is rendered by intl-tel-input CSS.
       ──────────────────────────────────────── */
       var phoneInput = document.getElementById('phone');
       var iti = intlTelInput(phoneInput, {
-        initialCountry: 'id',
-        separateDialCode: true,
-        preferredCountries: ['id', 'us', 'gb', 'au', 'sg', 'my'],
+        initialCountry:    'us',
+        separateDialCode:  true,
+        preferredCountries: ['us', 'sg', 'ph'],
         utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js'
       });
 
@@ -1274,8 +1379,10 @@
       var plusYes          = document.getElementById('plus-yes');
       var plusNo           = document.getElementById('plus-no');
       var submitBtn        = document.getElementById('submit-btn');
-      var submitStatus = document.getElementById('submit-status');
-      var emailError   = document.getElementById('email-error');
+      var submitStatus     = document.getElementById('submit-status');
+      var emailError       = document.getElementById('email-error');
+      var formErrors       = document.getElementById('form-errors');
+      var submitAttempted  = false; /* errors only shown after first tap on disabled button */
 
       /* ────────────────────────────────────────
          Guest List State
@@ -1323,8 +1430,9 @@
          Form Reset
       ──────────────────────────────────────── */
       function resetForm() {
-        guestFound   = false;
-        guestPlusOne = false;
+        guestFound      = false;
+        guestPlusOne    = false;
+        submitAttempted = false;   /* clear so errors don't show on fresh lookup */
 
         toggleVisible(guestError, false);
         toggleVisible(attendanceBlock, false);
@@ -1339,7 +1447,7 @@
           if (el) el.classList.remove('inactive');
         });
 
-        submitBtn.disabled = true;
+        setInactive();
       }
 
       /* ────────────────────────────────────────
@@ -1372,8 +1480,9 @@
       });
 
       document.getElementById('lastname').addEventListener('input', function () {
+        /* Reset and hide error while typing — only evaluate on blur */
         clearTimeout(lookupTimer);
-        lookupTimer = setTimeout(doLookup, 400);
+        resetForm();
       });
 
       document.getElementById('firstname').addEventListener('blur', function () {
@@ -1385,6 +1494,10 @@
       ──────────────────────────────────────── */
       attYes.addEventListener('change', function () {
         if (!this.checked) return;
+        document.getElementById('radio-yes').classList.remove('radio-error');
+        document.getElementById('radio-no').classList.remove('radio-error');
+        submitAttempted = false;
+        formErrors.textContent = '';
         toggleVisible(attendingFields, true);
         radioNo.classList.add('inactive');
         radioYes.classList.remove('inactive');
@@ -1394,6 +1507,10 @@
 
       attNo.addEventListener('change', function () {
         if (!this.checked) return;
+        document.getElementById('radio-yes').classList.remove('radio-error');
+        document.getElementById('radio-no').classList.remove('radio-error');
+        submitAttempted = false;
+        formErrors.textContent = '';
         toggleVisible(attendingFields, false);
         toggleVisible(plusOneBlock, false);
         toggleVisible(plusOneFields, false);
@@ -1407,6 +1524,10 @@
       ──────────────────────────────────────── */
       plusYes.addEventListener('change', function () {
         if (!this.checked) return;
+        document.getElementById('radio-plus-yes').classList.remove('radio-error');
+        document.getElementById('radio-plus-no').classList.remove('radio-error');
+        submitAttempted = false;
+        formErrors.textContent = '';
         toggleVisible(plusOneFields, true);
         document.getElementById('radio-plus-no').classList.add('inactive');
         document.getElementById('radio-plus-yes').classList.remove('inactive');
@@ -1415,6 +1536,10 @@
 
       plusNo.addEventListener('change', function () {
         if (!this.checked) return;
+        document.getElementById('radio-plus-yes').classList.remove('radio-error');
+        document.getElementById('radio-plus-no').classList.remove('radio-error');
+        submitAttempted = false;
+        formErrors.textContent = '';
         toggleVisible(plusOneFields, false);
         document.getElementById('radio-plus-yes').classList.add('inactive');
         document.getElementById('radio-plus-no').classList.remove('inactive');
@@ -1441,61 +1566,191 @@
          Email Validation
       ──────────────────────────────────────── */
       document.getElementById('email').addEventListener('input', function () {
+        this.closest('.form-field').classList.remove('field-error');
         toggleVisible(emailError, false);
         checkValidity();
       });
 
       document.getElementById('email').addEventListener('blur', function () {
         var v = this.value.trim();
-        toggleVisible(emailError, v !== '' && !EMAIL_REGEX.test(v));
+        /* Show warning if field has any content that isn't a valid email,
+           or if field is empty (user tabbed past without filling it) */
+        if (v !== '' && !EMAIL_REGEX.test(v)) {
+          toggleVisible(emailError, true);
+        } else {
+          toggleVisible(emailError, false);
+        }
       });
 
       /* ────────────────────────────────────────
          Input Change Listeners
       ──────────────────────────────────────── */
-      ['firstname', 'lastname', 'phone', 'dietary-other', 'plus-firstname', 'plus-lastname', 'plus-dietary-other'].forEach(function (id) {
+      ['firstname', 'lastname', 'phone', 'plus-firstname', 'plus-lastname', 'plus-dietary-other'].forEach(function (id) {
         var el = document.getElementById(id);
-        if (el) el.addEventListener('input', checkValidity);
+        if (el) el.addEventListener('input', function () {
+          el.closest('.form-field').classList.remove('field-error');
+          checkValidity();
+        });
+      });
+
+      /* Dietary "other" inputs — target the wrapper div directly */
+      document.getElementById('dietary-other').addEventListener('input', function () {
+        document.getElementById('dietary-other-field').classList.remove('field-error');
+        checkValidity();
+      });
+      document.getElementById('plus-dietary-other').addEventListener('input', function () {
+        document.getElementById('plus-dietary-other-field').classList.remove('field-error');
+        checkValidity();
       });
 
       /* ────────────────────────────────────────
          Validity Check
       ──────────────────────────────────────── */
+      function updateErrorSummary() {
+        /* Always clear highlights first */
+        ['firstname', 'lastname', 'phone', 'email', 'dietary', 'plus-firstname', 'plus-lastname', 'plus-dietary'].forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) el.closest('.form-field').classList.remove('field-error');
+        });
+        ['radio-yes', 'radio-no'].forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) el.classList.remove('radio-error');
+        });
+        ['radio-plus-yes', 'radio-plus-no'].forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) el.classList.remove('radio-error');
+        });
+
+        if (!submitAttempted) { formErrors.textContent = ''; return; }
+
+        var errors = [];
+
+        /* Name fields empty or guest not found */
+        if (!val('firstname') || !val('lastname')) {
+          if (!val('firstname')) document.getElementById('firstname').closest('.form-field').classList.add('field-error');
+          if (!val('lastname'))  document.getElementById('lastname').closest('.form-field').classList.add('field-error');
+          errors.push('Please enter your name');
+          formErrors.textContent = errors.join(' · ');
+          return;
+        }
+        if (!guestFound) {
+          document.getElementById('firstname').closest('.form-field').classList.add('field-error');
+          document.getElementById('lastname').closest('.form-field').classList.add('field-error');
+          errors.push("We couldn't find your name on the guest list");
+          formErrors.textContent = errors.join(' · ');
+          return;
+        }
+
+        /* Attendance not chosen */
+        if (!attYes.checked && !attNo.checked) {
+          errors.push('Please choose your attendance');
+          document.getElementById('radio-yes').classList.add('radio-error');
+          document.getElementById('radio-no').classList.add('radio-error');
+          formErrors.textContent = errors.join(' · ');
+          return; /* nothing else relevant until attendance is chosen */
+        }
+
+        if (!attYes.checked) { formErrors.textContent = ''; return; }
+
+        /* Attending fields */
+        if (!val('phone')) {
+          errors.push('Mobile number is required');
+          document.getElementById('phone').closest('.form-field').classList.add('field-error');
+        }
+        if (!val('email')) {
+          errors.push('Email is required');
+          document.getElementById('email').closest('.form-field').classList.add('field-error');
+        } else if (!EMAIL_REGEX.test(val('email'))) {
+          errors.push('Please make sure your email is valid');
+          document.getElementById('email').closest('.form-field').classList.add('field-error');
+        }
+
+        var dietary = document.getElementById('dietary').value;
+        var guestDietaryBlank = dietary === 'others' && !val('dietary-other');
+        if (guestDietaryBlank) {
+          document.getElementById('dietary-other-field').classList.add('field-error');
+        }
+
+        var plusDietaryBlank = false;
+        if (guestPlusOne && plusOneBlock.classList.contains('is-visible') && plusYes.checked) {
+          var plusDietary = document.getElementById('plus-dietary').value;
+          plusDietaryBlank = plusDietary === 'others' && !val('plus-dietary-other');
+          if (plusDietaryBlank) {
+            document.getElementById('plus-dietary-other-field').classList.add('field-error');
+          }
+        }
+
+        if (guestDietaryBlank && plusDietaryBlank)
+          errors.push('Please specify your and your plus one\'s dietary restriction');
+        else if (guestDietaryBlank)
+          errors.push('Please specify your dietary restriction');
+        else if (plusDietaryBlank)
+          errors.push('Please specify your plus one\'s dietary restriction');
+
+        /* Plus one not chosen yet */
+        if (guestPlusOne && plusOneBlock.classList.contains('is-visible')) {
+          if (!plusYes.checked && !plusNo.checked) {
+            errors.push('Please choose your plus one preference');
+            document.getElementById('radio-plus-yes').classList.add('radio-error');
+            document.getElementById('radio-plus-no').classList.add('radio-error');
+          } else if (plusYes.checked) {
+            if (!val('plus-firstname') || !val('plus-lastname')) {
+              errors.push('Plus one name is required');
+              if (!val('plus-firstname')) document.getElementById('plus-firstname').closest('.form-field').classList.add('field-error');
+              if (!val('plus-lastname'))  document.getElementById('plus-lastname').closest('.form-field').classList.add('field-error');
+            }
+          }
+        }
+
+        formErrors.textContent = errors.join(' · ');
+      }
+
+      function setInactive() { submitBtn.classList.add('is-inactive'); }
+      function setActive()   { submitBtn.classList.remove('is-inactive'); formErrors.textContent = ''; }
+      function isInactive()  { return submitBtn.classList.contains('is-inactive'); }
+
       function checkValidity() {
-        if (!guestFound)     { submitBtn.disabled = true;  return; }
-        if (attNo.checked)   { submitBtn.disabled = false; return; }
-        if (!attYes.checked) { submitBtn.disabled = true;  return; }
+        if (!guestFound)     { setInactive(); updateErrorSummary(); return; }
+        if (attNo.checked)   { setActive();   return; }
+        if (!attYes.checked) { setInactive(); updateErrorSummary(); return; }
 
         var dietary = document.getElementById('dietary').value;
         var dietaryOtherOk = dietary !== 'others' || val('dietary-other').length > 0;
 
         if (!val('firstname') || !val('lastname') || !val('phone') || !EMAIL_REGEX.test(val('email')) || !dietaryOtherOk) {
-          submitBtn.disabled = true;
-          return;
+          setInactive(); updateErrorSummary(); return;
         }
 
         if (guestPlusOne && plusOneBlock.classList.contains('is-visible')) {
-          if (!plusYes.checked && !plusNo.checked) {
-            submitBtn.disabled = true;
-            return;
-          }
+          if (!plusYes.checked && !plusNo.checked) { setInactive(); updateErrorSummary(); return; }
           if (plusYes.checked) {
-            var plusDietary = document.getElementById('plus-dietary').value;
-            var plusDietaryOtherOk = plusDietary !== 'others' || val('plus-dietary-other').length > 0;
+            var plusDietary2 = document.getElementById('plus-dietary').value;
+            var plusDietaryOtherOk = plusDietary2 !== 'others' || val('plus-dietary-other').length > 0;
             if (!val('plus-firstname') || !val('plus-lastname') || !plusDietaryOtherOk) {
-              submitBtn.disabled = true;
-              return;
+              setInactive(); updateErrorSummary(); return;
             }
           }
         }
 
-        submitBtn.disabled = false;
+        setActive();
       }
 
       /* ────────────────────────────────────────
-         Submit
+         Submit — single handler, always fires
+         Button is never actually disabled so iOS
+         Safari always delivers the click event.
       ──────────────────────────────────────── */
       submitBtn.addEventListener('click', async function () {
+        /* Already sent — do nothing */
+        if (submitBtn.classList.contains('is-sent')) return;
+
+        /* Not ready — show errors */
+        if (isInactive()) {
+          submitAttempted = true;
+          updateErrorSummary();
+          return;
+        }
+
         var isAttending  = attYes.checked;
         var bringingPlus = isAttending && plusYes.checked;
 
@@ -1515,20 +1770,26 @@
           plus_dietary_other: bringingPlus ? val('plus-dietary-other') : ''
         };
 
-        submitBtn.disabled    = true;
-        submitBtn.textContent = 'Sending...';
+        setInactive();
+        submitBtn.innerHTML = '<span class="submit-btn__spinner" aria-label="Sending…"></span>';
+        submitBtn.style.background = 'var(--color-brown)';
 
         try {
           var data = await jsonp(params, 'submit_' + Date.now());
           console.log('Submit response:', data);
-          submitBtn.textContent = 'Submit';
+          form.classList.add('is-submitted');
+          submitBtn.classList.remove('is-inactive');
+          submitBtn.classList.add('is-sent');
+          submitBtn.style.background = '';
+          submitBtn.textContent = isAttending ? 'See you there ✦' : 'Sent ✦';
           submitStatus.className = 'submit-status';
           submitStatus.textContent = isAttending
-            ? 'Thank you! We look forward to celebrating with you.'
+            ? 'Thank you! We look forward to celebrating with you. A confirmation has been sent to your email.'
             : "We're sorry you're unable to make it. Thank you for letting us know.";
         } catch (err) {
           console.error('Submit error:', err);
-          submitBtn.disabled    = false;
+          submitBtn.classList.remove('is-inactive');
+          submitBtn.style.background = '';
           submitBtn.textContent = 'Submit';
           submitStatus.className = 'submit-status submit-status--error';
           submitStatus.textContent = 'Something went wrong. Please try again.';
