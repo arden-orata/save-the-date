@@ -225,7 +225,7 @@
     .venue-display-text {
       color: #7a4a28;
       margin-bottom: 1.5rem;
-      letter-spacing: 0.08em;
+      letter-spacing: -0.04em;
     }
 
     .venue-name {
@@ -326,86 +326,19 @@
     .sunset-event-time {
       color: #fff;
       margin-top: calc(1.4rem + 1.4rem);
-      margin-bottom: 2.5rem;
+      margin-bottom: 3rem;
     }
 
     .sunset-link {
       color: #fff;
-      text-decoration: none;
+      text-decoration: underline;
+      text-decoration-color: #9b7fb6;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.2em;
     }
 
     .sunset-link:hover {
       color: #e8c87a;
-    }
-
-    .sunset-arrow-link {
-      color: #fff;
-      text-decoration: none;
-      font-weight: 700;
-    }
-
-    .sunset-arrow-link:hover {
-      color: #9b7fb6;
-    }
-
-    /* Sunset Timeline */
-    .sunset-timeline {
-      display: flex;
-      align-items: stretch;
-      justify-content: center;
-      gap: 0;
-      margin-bottom: 2.5rem;
-      width: 100%;
-    }
-
-    .sunset-timeline-track {
-      position: relative;
-      width: 2px;
-      flex-shrink: 0;
-      margin: 0 1.2rem;
-    }
-
-    .sunset-timeline-line {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 1px;
-      background: rgba(255,255,255,0.6);
-    }
-
-    .sunset-timeline-node {
-      position: absolute;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      background: #fff;
-      border: none;
-    }
-
-    .sunset-timeline-times,
-    .sunset-timeline-events {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      font-family: var(--font-sans);
-      font-weight: 400;
-      font-size: clamp(0.8rem, 2vw, 1.1rem);
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: #fff;
-      min-height: 6rem;
-    }
-
-    .sunset-timeline-times {
-      text-align: right;
-    }
-
-    .sunset-timeline-events {
-      text-align: left;
     }
 
     .sunset-event-body {
@@ -443,7 +376,7 @@
     }
 
     .fountain-day {
-      color: #fff;
+      color: #1e1e1e;
       margin-top: -9vh;
       margin-bottom: 1.4rem;
       word-spacing: -0.3em;
@@ -454,20 +387,23 @@
     }
 
     .fountain-event-title {
-      color: #005a4e;
+      color: #007a6a;
       margin-top: calc(-2vh + 1.4rem);
       margin-bottom: 0;
     }
 
     .fountain-event-time {
-      color: #fff;
+      color: #1e1e1e;
       margin-top: 2.8rem;
       margin-bottom: 2.5rem;
     }
 
     .fountain-link {
-      color: #fff;
-      text-decoration: none;
+      color: #1e1e1e;
+      text-decoration: underline;
+      text-decoration-color: #7ec8e3;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.2em;
     }
 
     .fountain-link:hover {
@@ -498,17 +434,17 @@
       left: 50%;
       transform: translateX(-50%);
       width: 1px;
-      background: rgba(255,255,255,0.6);
+      background: rgba(30,30,30,0.5);
     }
 
     .timeline-node {
       position: absolute;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 4px;
-      height: 4px;
+      width: 5px;
+      height: 5px;
       border-radius: 50%;
-      background: #fff;
+      background: #1e1e1e;
       border: none;
     }
 
@@ -519,10 +455,10 @@
       justify-content: space-between;
       font-family: var(--font-sans);
       font-weight: 400;
-      font-size: clamp(0.8rem, 2vw, 1.1rem);
+      font-size: clamp(1rem, 2.6vw, 1.4rem);
       letter-spacing: 0.15em;
       text-transform: uppercase;
-      color: #fff;
+      color: #1e1e1e;
       gap: 0;
       min-height: 8rem;
     }
@@ -536,7 +472,7 @@
     }
 
     .fountain-event-body {
-      color: #fff;
+      color: #1e1e1e;
       max-width: 42ch;
       line-height: 1.65;
       text-align: center;
@@ -943,38 +879,18 @@
       <p class="t-display sunset-day"><span class="sunset-day-word">Day</span>&nbsp;&nbsp;1</p>
       <p class="t-names sunset-event-title">Welcome Dinner</p>
       <p class="t-label sunset-event-time">
-        August 21 @ Akasa<a
+        6–10PM @ <a
           href="https://maps.app.goo.gl/Bv3GnisTvXtpg3ARA"
           target="_blank"
           rel="noopener noreferrer"
-          class="sunset-arrow-link"
-        >→</a>
+          class="sunset-link"
+        >Akasa Jumeirah Bali</a>
       </p>
-
-      <div class="sunset-timeline">
-        <div class="sunset-timeline-times">
-          <span>6PM</span>
-          <span>7PM</span>
-          <span>8PM</span>
-        </div>
-        <div class="sunset-timeline-track">
-          <div class="sunset-timeline-line"></div>
-          <div class="sunset-timeline-node" style="top:0%"></div>
-          <div class="sunset-timeline-node" style="top:50%"></div>
-          <div class="sunset-timeline-node" style="top:100%"></div>
-        </div>
-        <div class="sunset-timeline-events">
-          <span>Welcome Drinks</span>
-          <span>Sit-Down Dinner</span>
-          <span>Balinese Festivities</span>
-        </div>
-      </div>
-
       <p class="t-body sunset-event-body">
         Join us for a relaxed dinner on the cliff tops<br />
         by the beach as we kick off the celebrations.<br />
         Come ready for delicious food, sunset views,<br />
-        ocean breeze, live music, and Balinese festivities!
+        ocean breezes, and live music.
       </p>
     </div>
   </section>
@@ -993,12 +909,12 @@
       <p class="t-display fountain-day"><span class="fountain-day-word">Day</span>&nbsp;&nbsp;2</p>
       <p class="t-names fountain-event-title">The Wedding</p>
       <p class="t-label fountain-event-time">
-        <a
-          href="https://maps.app.goo.gl/W8nwjJ2mCKdgq41p7"
+        4PM&ndash;12MN @ <a
+          href="https://maps.app.goo.gl/apddcYeKuG9n2bmY6"
           target="_blank"
           rel="noopener noreferrer"
           class="fountain-link"
-        >August 22 @ The Courtyard</a><a href="https://maps.app.goo.gl/W8nwjJ2mCKdgq41p7" target="_blank" rel="noopener noreferrer" class="sunset-arrow-link">→</a>
+        >Jumeirah Bali</a>
       </p>
 
       <div class="fountain-timeline">
